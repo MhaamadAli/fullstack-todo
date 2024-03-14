@@ -7,13 +7,13 @@ $email = isset($_POST['email'])? $_POST['email'] : null;
 $password = $_POST['password'];
 
 if($username) {
-    $query = $mysqli ->prepare('SELECT user_id,user_name,email,password
+    $query = $mysqli ->prepare('SELECT id,user_name,email,password
     FROM users
     WHERE user_name=?');
 
     $query->bind_param('s', $username);
 }elseif($email) {
-    $query = $mysqli ->prepare('SELECT user_id,user_name,email,password
+    $query = $mysqli ->prepare('SELECT id,user_name,email,password
     FROM users
     WHERE email=?');
 
@@ -34,7 +34,7 @@ if ($num_rows == 0) {
 } else {
     if (password_verify($password, $hashed_password)) {
         $response['message'] = "logged in";
-        $response['user_id'] = $id;
+        $response['id'] = $id;
         $response['user_name'] = $username;
         $response['email'] = $email;
     } else {
