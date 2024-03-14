@@ -1,12 +1,11 @@
 <?php 
-
 include "./connection.php";
 
 $username = $_POST['username'];
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-$check_user = $connection ->prepare('SELECT username, email FROM users WHERE username= ? OR email= ?');
+$check_user = $mysqli ->prepare('SELECT user_name, email FROM users WHERE user_name= ? OR email= ?');
 
 $check_user ->bind_param('ss', $username, $email);
 
@@ -18,7 +17,7 @@ if ($result == 1) {
     $response['message'] = "user already exist";
 } else {
     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-    $query = $connection ->prepare('INSERT INTO users(username, email, password) VALUES (?, ?, ?)');
+    $query = $mysqli ->prepare('INSERT INTO users(user_name, email, password) VALUES (?, ?, ?)');
     $query ->bind_param('sss', $username, $email, $hashed_password);
 
     if($query->execute()) {
@@ -30,4 +29,4 @@ if ($result == 1) {
 
 echo json_encode($response);
 
-$connection ->close();
+$mysqli ->close();
