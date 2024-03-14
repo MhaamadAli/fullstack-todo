@@ -1,9 +1,9 @@
 <?php 
 include('./connection.php');
 
-$userid = $_GET['userid'];
+$userid = $_GET['user_id'];
 
-$query = $mysqli ->prepare('SELECT * FROM todos WHERE userid=?');
+$query = $mysqli ->prepare('SELECT * FROM todos WHERE user_id=?');
 
 $query ->bind_param('i', $userid);
 
@@ -25,3 +25,4 @@ while($query ->fetch()) {
     ];
     $response[] = $todo;
 }
+echo json_encode($response);
