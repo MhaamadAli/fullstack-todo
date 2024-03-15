@@ -6,7 +6,7 @@ const remainingTasks = document.querySelector('#remaining-tasks');
 const mainInput = document.querySelector('#todo-form input');
 const deleteButtons = document.querySelectorAll('.remove-task');
 
-let tasks = []; // Initialize tasks as an empty array
+let tasks = [];
 
 async function loadTodosFromBackend() {
     try {
@@ -14,20 +14,17 @@ async function loadTodosFromBackend() {
         const userData = JSON.parse(localStorage.getItem('authenticatedUser'));
         const user_id = userData.id;
 
-        // Make a GET request to fetch todos for the logged-in user
         const response = await axios.get(`http://localhost/todo/backend/get_todos.php?user_id=${user_id}`);
         
-        // Update the tasks array with the retrieved todos
+
         tasks = response.data.map(todo => ({
             id: todo.todo_id,
             description: todo.description,
             isCompleted: todo.isCompleted
         }));
         
-        // Render the todos on the page
         tasks.forEach(task => createTaskElement(task));
         
-        // Update task counts
         countTasks();
     } catch (error) {
         console.error("Error loading todos:", error);
@@ -35,12 +32,11 @@ async function loadTodosFromBackend() {
 }
 
 
-// Function to create a task element
+
 function createTaskElement(task) {
     const taskEl = document.createElement('li');
     taskEl.setAttribute('id', task.id);
 
-    // Create the HTML markup for the task element
     const taskElMarkup = `
         <div>
             <input type="checkbox" name="tasks" id="${task.id}" ${task.isCompleted ? 'checked' : ''}>
@@ -54,12 +50,11 @@ function createTaskElement(task) {
     `;
     taskEl.innerHTML = taskElMarkup;
 
-    // Append the task element to the todo list
     todoList.appendChild(taskEl);
 
 }
 
-// Function to count tasks and update counters
+
 function countTasks() {
     const completedTasksArray = tasks.filter(task => task.isCompleted);
     totalTasks.textContent = tasks.length;
@@ -97,7 +92,7 @@ deleteButtons.forEach((button) => {
     })
 })
 
-// Event listener for form submission
+
 todoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const userData = JSON.parse(localStorage.getItem('authenticatedUser'))
@@ -144,7 +139,7 @@ todoForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Event listener for todo list item clicks
+
 todoList.addEventListener('click', async (e) => {
     if (e.target.classList.contains('remove-task')) {
         const taskId = e.target.closest('li').id;
@@ -152,15 +147,11 @@ todoList.addEventListener('click', async (e) => {
     }
 });
 
-// Event listener for todo list item updates (e.g., checkbox checked/unchecked)
 todoList.addEventListener('input', async (e) => {
     const taskId = e.target.closest('li').id;
     updateTask(taskId, e.target);
 });
 
-
-
-// Function to update a task
 async function updateTask(taskId, el) {
     let task = tasks.find(task => task.id === parseInt(taskId));
     const userData = JSON.parse(localStorage.getItem('authenticatedUser'))
