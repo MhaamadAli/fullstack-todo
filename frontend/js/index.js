@@ -25,31 +25,6 @@ loginForm.addEventListener('submit', async function (event) {
 });
 
 
-const signupForm = document.getElementById('signupForm');
-signupForm.addEventListener('submit', async function (event) {
-    event.preventDefault();
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    const formData = new FormData();
-    if (username) {
-        formData.append('username', username);
-    } else if (email) {
-        formData.append('email', email);
-    }
-    formData.append('password', password);
-
-    try {
-        const response = await axios.post('http://localhost/todo/backend/login.php', formData)
-        if(response.data.message === "logged in") {
-            localStorage.setItem('authenticatedUser', JSON.stringify(response.data))
-            window.location.href = './pages/todo.html';
-        }
-    } catch (error) {
-        console.log(error)
-    }
-});
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -70,4 +45,26 @@ document.addEventListener('DOMContentLoaded', function () {
         loginForm.classList.remove('hidden');
     });
 
+
+    signupForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('email', email);
+    formData.append('password', password);
+
+    try {
+        const response = await axios.post('http://localhost/todo/backend/create_user.php', formData);
+        if(response.data.message === "user created") {
+            localStorage.setItem('authenticatedUser', JSON.stringify(response.data));
+            window.location.href = './pages/todo.html';
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
 });
