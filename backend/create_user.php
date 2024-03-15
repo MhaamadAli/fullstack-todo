@@ -22,6 +22,8 @@ if ($result == 1) {
 
     if($query->execute()) {
         $response['message'] = "user created";
+        $response['user_name'] = $username;
+        $response['email'] = $email;
     } else {
         $response['message'] = "user not created";
     }
