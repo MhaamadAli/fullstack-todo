@@ -1,0 +1,20 @@
+:root {
+    --body-font: 'Figtree', sans-serif;
+
+    --color-body: #E8F3F8;
+    --color-header: #2596be;
+    --color-text: var(--color-header);
+    --color-text-muted: #ffffff;
+    --color-input: #082937;
+    --color-input-lighter: #0b374a;
+    --color-secondary: #FF8C42;
+    --color-secondary-darker: #cc7035;
+    --color-secondary-lighter: #ffa368;
+    --color-tertiary: #3a1486;
+    --color-text-badge: #E8F3F8;
+    --color-disabled: #D2E7F1;
+    --color-text-disabled: #844bdc;
+
+    --global-border-radius: 6px;
+    --global-transition: all .2s ease-in-out;
+}
