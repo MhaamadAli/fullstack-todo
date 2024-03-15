@@ -20,7 +20,7 @@ while($query ->fetch()) {
     $todo = [
         'todo_id' => $todo_id,
         'description' => $description,
-        'isdone' => $isdone,
+        'isCompleted' => $isdone,
         'user_id' => $user_id
     ];
     $response[] = $todo;
