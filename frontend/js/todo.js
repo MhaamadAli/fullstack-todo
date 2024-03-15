@@ -4,11 +4,13 @@ const totalTasks = document.querySelector('#total-tasks');
 const completedTasks = document.querySelector('#completed-tasks');
 const remainingTasks = document.querySelector('#remaining-tasks');
 const mainInput = document.querySelector('#todo-form input');
+const deleteButtons = document.querySelectorAll('.remove-task');
 
 let tasks = []; // Initialize tasks as an empty array
 
 async function loadTodosFromBackend() {
     try {
+        todoList.innerHTML = ""
         const userData = JSON.parse(localStorage.getItem('authenticatedUser'));
         const user_id = userData.id;
 
@@ -44,7 +46,7 @@ function createTaskElement(task) {
             <input type="checkbox" name="tasks" id="${task.id}" ${task.isCompleted ? 'checked' : ''}>
             <span ${!task.isCompleted ? 'contenteditable' : ''}>${task.description}</span>
         </div>
-        <button title="Remove the ${task.description} task" class="remove-task">
+        <button title="Remove the ${task.description} task" class="remove-task" data-set="${task.id}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                 <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
             </svg>
@@ -55,8 +57,6 @@ function createTaskElement(task) {
     // Append the task element to the todo list
     todoList.appendChild(taskEl);
 
-    // Update task counts
-    countTasks();
 }
 
 // Function to count tasks and update counters
@@ -67,18 +67,35 @@ function countTasks() {
     remainingTasks.textContent = tasks.length - completedTasksArray.length;
 }
 
-// Function to remove a task
-function removeTask(taskId) {
-    // Remove the task from the tasks array
-    tasks = tasks.filter(task => task.id !== parseInt(taskId));
-    localStorage.setItem('tasks', JSON.stringify(tasks));
 
-    // Remove the task element from the DOM
-    document.getElementById(taskId).remove();
 
-    // Update task counts
-    countTasks();
+async function removeTask(taskId) {
+    try {
+        const userData = JSON.parse(localStorage.getItem('authenticatedUser'));
+        const user_id = userData.id;
+        const formData = new FormData()
+        formData.append("todo_id", parseInt(taskId))
+        formData.append("user_id", parseInt(user_id))
+
+        const response = await axios.post('http://localhost/todo/backend/delete_todo.php', formData);
+        console.log(response);
+        if (response.data.message === "deleted successfully") {
+            loadTodosFromBackend()
+        } else {
+            console.error("Error deleting todo");
+        }
+    } catch (error) {
+        console.error("Error deleting todo:", error);
+    }
 }
+
+deleteButtons.forEach((button) => {
+    button.addEventListener('click', ()=> {
+        const todo_id = parseInt(button.dataset.id);
+        console.log(todo_id)
+        removeTask(todo_id)
+    })
+})
 
 // Event listener for form submission
 todoForm.addEventListener('submit', async (e) => {
@@ -141,9 +158,16 @@ todoList.addEventListener('input', async (e) => {
     updateTask(taskId, e.target);
 });
 
+
+
 // Function to update a task
 async function updateTask(taskId, el) {
-    const task = tasks.find(task => task.id === parseInt(taskId));
+    let task = tasks.find(task => task.id === parseInt(taskId));
+    const userData = JSON.parse(localStorage.getItem('authenticatedUser'))
+    const user_id = userData.id;
+    task.user_id = parseInt(user_id);
+    console.log(task);
+
 
     if (el.hasAttribute('contenteditable')) {
         task.description = el.textContent.trim();
@@ -164,22 +188,25 @@ async function updateTask(taskId, el) {
 
     try {
         // Make a POST request to update the task
-        const response = await axios.post('http://localhost/todo/backend/update_todo.php', {
-            id: taskId,
+        const response = await axios.post('http://localhost/todo/backend/edit_todo.php', {
+            todo_id: taskId,
             description: task.description,
-            isdone: task.isCompleted ? 1 : 0 // Convert boolean to integer
+            isCompleted: task.isCompleted ? 1 : 0 // Corrected field name to isCompleted
         });
 
-        if (response.data.message === "todo updated") {
+
+        if (response.data.message === "edited successfully") {
             localStorage.setItem('tasks', JSON.stringify(tasks));
             countTasks();
         } else {
             console.error("Failed to update todo");
         }
     } catch (error) {
+        
         console.error("Error updating todo:", error);
     }
 }
+
 
 
 window.addEventListener('load', loadTodosFromBackend);
