@@ -73,7 +73,7 @@ async function removeTask(taskId) {
         formData.append("user_id", parseInt(user_id))
 
         const response = await axios.post('http://localhost/todo/backend/delete_todo.php', formData);
-        console.log(response);
+
         if (response.data.message === "deleted successfully") {
             loadTodosFromBackend()
         } else {
@@ -87,7 +87,6 @@ async function removeTask(taskId) {
 deleteButtons.forEach((button) => {
     button.addEventListener('click', ()=> {
         const todo_id = parseInt(button.dataset.id);
-        console.log(todo_id)
         removeTask(todo_id)
     })
 })
@@ -112,7 +111,6 @@ todoForm.addEventListener('submit', async (e) => {
         formData.append('user_id', user_id);
         // Make a POST request to create a new todo
         const response = await axios.post('http://localhost/todo/backend/create_todo.php', formData);
-        console.log(response)
         if (response.data.message === "todo created") {
             // Create a task object with the response data
             const task = {
@@ -120,7 +118,6 @@ todoForm.addEventListener('submit', async (e) => {
                 description: description,
                 isCompleted: false
             };
-            console.log(task)
 
             // Add the new task to the tasks array
             tasks.push(task);
@@ -157,7 +154,6 @@ async function updateTask(taskId, el) {
     const userData = JSON.parse(localStorage.getItem('authenticatedUser'))
     const user_id = userData.id;
     task.user_id = parseInt(user_id);
-    console.log(task);
 
 
     if (el.hasAttribute('contenteditable')) {
