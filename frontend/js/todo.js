@@ -7,6 +7,31 @@ const mainInput = document.querySelector('#todo-form input');
 
 let tasks = []; // Initialize tasks as an empty array
 
+async function loadTodosFromBackend() {
+    try {
+        const userData = JSON.parse(localStorage.getItem('authenticatedUser'));
+        const user_id = userData.id;
+
+        // Make a GET request to fetch todos for the logged-in user
+        const response = await axios.get(`http://localhost/todo/backend/get_todos.php?user_id=${user_id}`);
+        
+        // Update the tasks array with the retrieved todos
+        tasks = response.data.map(todo => ({
+            id: todo.todo_id,
+            description: todo.description,
+            isCompleted: todo.isCompleted
+        }));
+        
+        // Render the todos on the page
+        tasks.forEach(task => createTaskElement(task));
+        
+        // Update task counts
+        countTasks();
+    } catch (error) {
+        console.error("Error loading todos:", error);
+    }
+}
+
 
 // Function to create a task element
 function createTaskElement(task) {
@@ -155,3 +180,6 @@ async function updateTask(taskId, el) {
         console.error("Error updating todo:", error);
     }
 }
+
+
+window.addEventListener('load', loadTodosFromBackend);
